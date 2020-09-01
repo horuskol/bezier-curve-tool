@@ -90,6 +90,8 @@ export default {
             mode: 'points',
             points: [],
 
+            pointSize: 5,
+
             gridX: 20,
             gridY: 20,
             showGrid: false,
@@ -175,17 +177,17 @@ export default {
             return this.points.reduce((found, point, p) => {
                 if (!found) {
                     if (
-                        point.x - point.anchors[0].x - 3 <= x
-                        && point.x - point.anchors[0].x + 3 >= x
-                        && point.y - point.anchors[0].y - 3 <= y
-                        && point.y - point.anchors[0].y + 3 >= y
+                        point.x - point.anchors[0].x - this.pointSize <= x
+                        && point.x - point.anchors[0].x + this.pointSize >= x
+                        && point.y - point.anchors[0].y - this.pointSize <= y
+                        && point.y - point.anchors[0].y + this.pointSize >= y
                     ) {
                         return {p, a: 0};
                     } else if (
-                        point.x - point.anchors[1].x - 3 <= x
-                        && point.x - point.anchors[1].x + 3 >= x
-                        && point.y - point.anchors[1].y - 3 <= y
-                        && point.y - point.anchors[1].y + 3 >= y
+                        point.x - point.anchors[1].x - this.pointSize <= x
+                        && point.x - point.anchors[1].x + this.pointSize >= x
+                        && point.y - point.anchors[1].y - this.pointSize <= y
+                        && point.y - point.anchors[1].y + this.pointSize >= y
                     ) {
                         return {p, a: 1};
                     }
@@ -197,10 +199,10 @@ export default {
 
         detectPoint(x, y) {
             return this.points.findIndex(({x: px, y: py}) => {
-                return px - 3 <= x
-                    && px + 3 >= x
-                    && py - 3 <= y
-                    && py + 3 >= y;
+                return px - this.pointSize <= x
+                    && px + this.pointSize >= x
+                    && py - this.pointSize <= y
+                    && py + this.pointSize >= y;
             });
         },
 
@@ -255,14 +257,14 @@ export default {
         drawPoint(p) {
             this.canvas.strokeStyle = '#808080';
 
-            this.canvas.strokeRect(this.points[p].x - this.points[p].anchors[0].x - 3, this.points[p].y - this.points[p].anchors[0].y - 3, 6, 6);
+            this.canvas.strokeRect(this.points[p].x - this.points[p].anchors[0].x - this.pointSize, this.points[p].y - this.points[p].anchors[0].y - this.pointSize, 2 * this.pointSize, 2 * this.pointSize);
 
             this.canvas.beginPath();
             this.canvas.moveTo(this.points[p].x, this.points[p].y);
             this.canvas.lineTo(this.points[p].x - this.points[p].anchors[0].x, this.points[p].y - this.points[p].anchors[0].y);
             this.canvas.stroke();
 
-            this.canvas.strokeRect(this.points[p].x - this.points[p].anchors[1].x - 3, this.points[p].y - this.points[p].anchors[1].y - 3, 6, 6);
+            this.canvas.strokeRect(this.points[p].x - this.points[p].anchors[1].x - this.pointSize, this.points[p].y - this.points[p].anchors[1].y - this.pointSize, 2 * this.pointSize, 2 * this.pointSize);
 
             this.canvas.beginPath();
             this.canvas.moveTo(this.points[p].x, this.points[p].y);
