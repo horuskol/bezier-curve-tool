@@ -63,13 +63,14 @@
                 class="border border-gray-900"
                 :height="height"
                 :width="width"
-                @mousedown="pointerDown"
+                @mousedown.left="pointerDown"
                 @touchstart="pointerDown"
-                @mouseup="pointerUp"
+                @mouseup.left="pointerUp"
                 @touchend="pointerUp"
                 @mouseupout="pointerCancel"
                 @touchendout="pointerCancel"
                 @touchcancel="pointerCancel"
+                @contextmenu="rightClick"
         />
     </div>
 </template>
@@ -312,9 +313,9 @@ export default {
         },
 
         pointerUp(event) {
-            if (this.mode === 'points' && this.dragging >= 0) {
-                const {x, y} = getPointerXY(event, true);
+            const {x, y} = getPointerXY(event, true);
 
+            if (this.mode === 'points' && this.dragging >= 0) {
                 this.movePoint(this.dragging, x, y);
                 this.refresh();
 
@@ -322,12 +323,25 @@ export default {
             }
 
             if (this.mode === 'anchors' && this.dragging >= 0) {
-                const {x, y} = getPointerXY(event, true);
-
                 this.moveAnchor(this.dragging, this.anchor, x, y);
                 this.refresh();
 
                 this.dragging = -1;
+            }
+        },
+
+        rightClick(event) {
+            const {x, y} = getPointerXY(event, true);
+
+            let p = -1;
+            if (this.mode === 'points' && (p = this.detectPoint(x, y)) >= -1) {
+                event.preventDefault();
+                this.points.splice(p, 1);
+                this.dragging = -1;
+                this.modifying = -1;
+                this.anchor = -1;
+
+                this.refresh();
             }
         },
 
