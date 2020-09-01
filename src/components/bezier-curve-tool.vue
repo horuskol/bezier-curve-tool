@@ -88,8 +88,8 @@ export default {
             mode: 'points',
             points: [],
 
-            gridX: 10,
-            gridY: 10,
+            gridX: 20,
+            gridY: 20,
             showGrid: false,
             snapToGrid: false,
 
@@ -124,13 +124,33 @@ export default {
 
     methods: {
         addPoint(x, y) {
+            const {x: snapX, y: snapY} = this.snapXY(x, y);
             const i = this.points.length;
-            Vue.set(this.points, i, {x, y});
+            Vue.set(this.points, i, {x: snapX, y: snapY});
             return i;
         },
 
+        snapXY(x, y) {
+            if (this.snapToGrid) {
+                if (x % this.gridX < this.gridX / 2) {
+                    x = x - x % this.gridX;
+                } else {
+                    x = x + this.gridX - x % this.gridX;
+                }
+
+                if (y % this.gridY < this.gridY / 2) {
+                    y = y - y % this.gridY;
+                } else {
+                    y = y + this.gridY - y % this.gridY;
+                }
+            }
+
+            return {x, y};
+        },
+
         movePoint(p, x, y) {
-            Vue.set(this.points, p, {x, y});
+            const {x: snapX, y: snapY} = this.snapXY(x, y);
+            Vue.set(this.points, p, {x: snapX, y: snapY});
         },
 
         detectPoint(x, y) {
