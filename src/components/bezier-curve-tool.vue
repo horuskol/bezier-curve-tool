@@ -111,6 +111,14 @@ export default {
     watch: {
         showGrid(value) {
             this.refresh();
+        },
+
+        gridX(value) {
+            this.refresh();
+        },
+
+        gridY(value) {
+            this.refresh();
         }
     },
 
@@ -139,8 +147,8 @@ export default {
                 const x = Number.parseInt(this.gridX);
                 const y = Number.parseInt(this.gridY);
 
-                this.buffer.canvas.height = x;
-                this.buffer.canvas.width = y;
+                this.buffer.canvas.height = y;
+                this.buffer.canvas.width = x;
 
                 this.buffer.fillStyle = 'white';
                 this.buffer.fillRect(0, 0, x, y);
