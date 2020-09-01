@@ -20,6 +20,9 @@
                     Move anchors
                 </button>
             </div>
+
+            <span v-if="currentPoint.x">x: {{ currentPoint.x }}</span>
+            <span v-if="currentPoint.y">x: {{ currentPoint.y }}</span>
         </div>
 
         <canvas ref="canvas"
@@ -38,6 +41,7 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import {getPointerXY} from 'lib/pointers';
 
 export default {
@@ -45,6 +49,7 @@ export default {
         return {
             canvas: null,
             dragging: -1,
+            modifying: -1,
             mode: 'points',
             points: [],
 
@@ -53,13 +58,25 @@ export default {
         };
     },
 
+    computed: {
+        currentPoint() {
+            if (this.modifying >= 0) {
+                return this.points[this.modifying];
+            }
+
+            return {};
+        }
+    },
+
     methods: {
         addPoint(x, y) {
-            return this.points.push({x, y}) - 1;
+            const i = this.points.length;
+            Vue.set(this.points, i, {x, y});
+            return i;
         },
 
         movePoint(p, x, y) {
-            this.points[p] = {x, y};
+            Vue.set(this.points, p, {x, y});
         },
 
         detectPoint(x, y) {
@@ -97,8 +114,10 @@ export default {
                 let p = -1;
                 if ((p = this.detectPoint(x, y)) >= 0) {
                     this.dragging = p;
+                    this.modifying = p;
                 } else {
                     this.dragging = this.addPoint(x, y);
+                    this.modifying = this.dragging;
                     this.drawPoint(x, y);
                 }
             }
