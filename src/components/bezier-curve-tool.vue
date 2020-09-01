@@ -1,5 +1,27 @@
 /<template>
     <div class="flex justify-center m-4">
+        <div class="flex-shrink">
+            <div class="flex flex-wrap">
+                <h3 class="w-full flex-shrink-0">Mouse control</h3>
+
+                <button class="block my-2 py-2 px-4 bg-white hover:bg-gray-100 disabled:bg-gray-400 text-gray-800 font-semibold border border-gray-400 rounded-l shadow"
+                        type="button"
+                        :disabled="mode === 'points'"
+                        @click.prevent="mode = 'points'"
+                >
+                    Move points
+                </button>
+
+                <button class="block my-2 py-2 px-4 bg-white hover:bg-gray-100 disabled:bg-gray-400 text-gray-800 font-semibold border border-gray-400 rounded-r shadow"
+                        type="button"
+                        :disabled="mode === 'anchors'"
+                        @click.prevent="mode = 'anchors'"
+                >
+                    Move anchors
+                </button>
+            </div>
+        </div>
+
         <canvas ref="canvas"
                 class="border"
                 :height="height"
@@ -23,6 +45,7 @@ export default {
         return {
             canvas: null,
             dragging: -1,
+            mode: 'points',
             points: [],
 
             height: 400,
@@ -70,12 +93,14 @@ export default {
         pointerDown(event) {
             const {x, y} = getPointerXY(event, true);
 
-            let p = -1;
-            if ((p = this.detectPoint(x, y)) >= 0) {
-                this.dragging = p;
-            } else {
-                this.dragging = this.addPoint(x, y);
-                this.drawPoint(x, y);
+            if (this.mode === 'points') {
+                let p = -1;
+                if ((p = this.detectPoint(x, y)) >= 0) {
+                    this.dragging = p;
+                } else {
+                    this.dragging = this.addPoint(x, y);
+                    this.drawPoint(x, y);
+                }
             }
         },
 
