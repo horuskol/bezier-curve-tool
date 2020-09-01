@@ -89,6 +89,7 @@ export default {
         },
 
         drawPath() {
+            this.canvas.strokeStyle = 'black';
             this.canvas.beginPath();
             this.canvas.moveTo(this.points[0].x, this.points[0].y);
             this.points.forEach(({x, y}) => {
@@ -97,7 +98,11 @@ export default {
             this.canvas.stroke();
         },
 
-        drawPoint(x, y) {
+        drawPoint(p, x, y) {
+            this.canvas.strokeStyle = 'black';
+            if (this.modifying === p) {
+                this.canvas.strokeStyle = 'red';
+            }
             this.canvas.beginPath();
             this.canvas.arc(x, y, 3, 0, Math.PI * 2, true);
             this.canvas.stroke();
@@ -118,7 +123,7 @@ export default {
                 } else {
                     this.dragging = this.addPoint(x, y);
                     this.modifying = this.dragging;
-                    this.drawPoint(x, y);
+                    this.drawPoint(this.modifying, x, y);
                 }
             }
         },
@@ -138,8 +143,8 @@ export default {
             this.canvas.fillStyle = 'white';
             this.canvas.fillRect(0, 0, this.width, this.height);
 
-            this.points.forEach(({x, y}) => {
-                 this.drawPoint(x, y);
+            this.points.forEach(({x, y}, p) => {
+                 this.drawPoint(p, x, y);
             });
             this.drawPath();
         }
