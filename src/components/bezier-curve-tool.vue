@@ -48,6 +48,15 @@ export default {
             });
         },
 
+        drawPath() {
+            this.canvas.beginPath();
+            this.canvas.moveTo(this.points[0].x, this.points[0].y);
+            this.points.forEach(({x, y}) => {
+                this.canvas.lineTo(x, y);
+            });
+            this.canvas.stroke();
+        },
+
         drawPoint(x, y) {
             this.canvas.beginPath();
             this.canvas.arc(x, y, 3, 0, Math.PI * 2, true);
@@ -88,6 +97,7 @@ export default {
             this.points.forEach(({x, y}) => {
                  this.drawPoint(x, y);
             });
+            this.drawPath();
         }
     },
 
