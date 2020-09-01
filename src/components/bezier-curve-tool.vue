@@ -84,6 +84,7 @@ export default {
             buffer: null,
             canvas: null,
             dragging: -1,
+            anchor: -1,
             modifying: -1,
             mode: 'points',
             points: [],
@@ -126,7 +127,14 @@ export default {
         addPoint(x, y) {
             const {x: snapX, y: snapY} = this.snapXY(x, y);
             const i = this.points.length;
-            Vue.set(this.points, i, {x: snapX, y: snapY});
+            Vue.set(this.points, i, {
+                x: snapX,
+                y: snapY,
+                anchors: [
+                    { x: 0, y: 0 },
+                    { x: 0, y: 0 }
+                ]
+            });
             return i;
         },
 
@@ -148,9 +156,42 @@ export default {
             return {x, y};
         },
 
+        moveAnchor(p, a, x, y) {
+            const {x: snapX, y: snapY} = this.snapXY(x, y);
+
+            this.points[p].anchors[a].x = this.points[p].x - snapX;
+            this.points[p].anchors[a].y = this.points[p].y - snapY;
+        },
+
         movePoint(p, x, y) {
             const {x: snapX, y: snapY} = this.snapXY(x, y);
-            Vue.set(this.points, p, {x: snapX, y: snapY});
+
+            this.points[p].x = snapX;
+            this.points[p].y = snapY;
+        },
+
+        detectAnchor(x, y) {
+            return this.points.reduce((found, point, p) => {
+                if (!found) {
+                    if (
+                        point.x - point.anchors[0].x - 3 <= x
+                        && point.x - point.anchors[0].x + 3 >= x
+                        && point.y - point.anchors[0].y - 3 <= y
+                        && point.y - point.anchors[0].y + 3 >= y
+                    ) {
+                        return {p, a: 0};
+                    } else if (
+                        point.x - point.anchors[1].x - 3 <= x
+                        && point.x - point.anchors[1].x + 3 >= x
+                        && point.y - point.anchors[1].y - 3 <= y
+                        && point.y - point.anchors[1].y + 3 >= y
+                    ) {
+                        return {p, a: 1};
+                    }
+                }
+
+                return found;
+            }, false);
         },
 
         detectPoint(x, y) {
@@ -210,13 +251,28 @@ export default {
             }
         },
 
-        drawPoint(p, x, y) {
-            this.canvas.strokeStyle = 'black';
+        drawPoint(p) {
+            this.canvas.strokeStyle = '#808080';
+
+            this.canvas.strokeRect(this.points[p].x - this.points[p].anchors[0].x - 3, this.points[p].y - this.points[p].anchors[0].y - 3, 6, 6);
+
+            this.canvas.beginPath();
+            this.canvas.moveTo(this.points[p].x, this.points[p].y);
+            this.canvas.lineTo(this.points[p].x - this.points[p].anchors[0].x, this.points[p].y - this.points[p].anchors[0].y);
+            this.canvas.stroke();
+
+            this.canvas.strokeRect(this.points[p].x - this.points[p].anchors[1].x - 3, this.points[p].y - this.points[p].anchors[1].y - 3, 6, 6);
+
+            this.canvas.beginPath();
+            this.canvas.moveTo(this.points[p].x, this.points[p].y);
+            this.canvas.lineTo(this.points[p].x - this.points[p].anchors[1].x, this.points[p].y - this.points[p].anchors[1].y);
+            this.canvas.stroke();
+
             if (this.modifying === p) {
                 this.canvas.strokeStyle = 'red';
             }
             this.canvas.beginPath();
-            this.canvas.arc(x, y, 3, 0, Math.PI * 2, true);
+            this.canvas.arc(this.points[p].x, this.points[p].y, 3, 0, Math.PI * 2, true);
             this.canvas.stroke();
         },
 
@@ -232,19 +288,43 @@ export default {
                 if ((p = this.detectPoint(x, y)) >= 0) {
                     this.dragging = p;
                     this.modifying = p;
+                    this.anchor = -1;
                 } else {
                     this.dragging = this.addPoint(x, y);
                     this.modifying = this.dragging;
                     this.drawPoint(this.modifying, x, y);
                 }
+            } else {
+                let p = -1;
+                let a = -1;
+
+                try {
+                    if (({p, a} = this.detectAnchor(x, y))) {
+
+                        this.dragging = p;
+                        this.modifying = p;
+                        this.anchor = a;
+                    }
+                } catch {
+                    // do nothing
+                }
             }
         },
 
         pointerUp(event) {
-            if (this.dragging >= 0) {
+            if (this.mode === 'points' && this.dragging >= 0) {
                 const {x, y} = getPointerXY(event, true);
 
                 this.movePoint(this.dragging, x, y);
+                this.refresh();
+
+                this.dragging = -1;
+            }
+
+            if (this.mode === 'anchors' && this.dragging >= 0) {
+                const {x, y} = getPointerXY(event, true);
+
+                this.moveAnchor(this.dragging, this.anchor, x, y);
                 this.refresh();
 
                 this.dragging = -1;
