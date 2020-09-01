@@ -275,7 +275,7 @@ export default {
                 this.canvas.strokeStyle = 'red';
             }
             this.canvas.beginPath();
-            this.canvas.arc(this.points[p].x, this.points[p].y, 3, 0, Math.PI * 2, true);
+            this.canvas.arc(this.points[p].x, this.points[p].y, this.pointSize, 0, Math.PI * 2, true);
             this.canvas.stroke();
         },
 
