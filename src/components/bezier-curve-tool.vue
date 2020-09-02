@@ -68,6 +68,8 @@
                 @touchendout="pointerCancel"
                 @touchcancel="pointerCancel"
                 @contextmenu="rightClick"
+                @mousemove="pointerMove"
+                @touchmove="pointerMove"
         />
     </div>
 </template>
@@ -293,6 +295,20 @@ export default {
             this.dragging = -1;
         },
 
+        pointerMove(event) {
+            const {x, y} = getPointerXY(event, true);
+
+            if (this.mode === 'points' && this.dragging >= 0) {
+                this.movePoint(this.dragging, x, y);
+                this.refresh();
+            }
+
+            if (this.mode === 'anchors' && this.dragging >= 0) {
+                this.moveAnchor(this.dragging, this.anchor, x, y);
+                this.refresh();
+            }
+        },
+
         pointerDown(event) {
             const {x, y} = getPointerXY(event, true);
 
@@ -366,8 +382,6 @@ export default {
                 this.points[p].anchors[a].y = 0;
 
                 this.refresh();
-
-                return;
             }
         },
 
