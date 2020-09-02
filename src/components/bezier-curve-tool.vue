@@ -56,21 +56,31 @@
             </div>
         </div>
 
-        <canvas ref="canvas"
-                class="border border-gray-900"
-                :height="height"
-                :width="width"
-                @mousedown.left="pointerDown"
-                @touchstart="pointerDown"
-                @mouseup.left="pointerUp"
-                @touchend="pointerUp"
-                @mouseupout="pointerCancel"
-                @touchendout="pointerCancel"
-                @touchcancel="pointerCancel"
-                @contextmenu="rightClick"
-                @mousemove="pointerMove"
-                @touchmove="pointerMove"
-        />
+        <div :style="{ height: height + 'px', width: width + 'px' }">
+            <div class="relative">
+                <canvas ref="grid"
+                        class="absolute top-0 left-0 border border-gray-900"
+                        :height="height"
+                        :width="width"
+                />
+
+                <canvas ref="canvas"
+                        class="absolute top-0 left-0 border border-gray-900"
+                        :height="height"
+                        :width="width"
+                        @mousedown.left="pointerDown"
+                        @touchstart="pointerDown"
+                        @mouseup.left="pointerUp"
+                        @touchend="pointerUp"
+                        @mouseupout="pointerCancel"
+                        @touchendout="pointerCancel"
+                        @touchcancel="pointerCancel"
+                        @contextmenu="rightClick"
+                        @mousemove="pointerMove"
+                        @touchmove="pointerMove"
+                />
+            </div>
+        </div>
     </div>
 </template>
 
@@ -83,6 +93,8 @@ export default {
         return {
             buffer: null,
             canvas: null,
+            grid: null,
+
             dragging: -1,
             anchor: -1,
             modifying: -1,
@@ -112,16 +124,20 @@ export default {
     },
 
     watch: {
-        showGrid(value) {
-            this.refresh();
+        showGrid(showGrid) {
+            if (showGrid) {
+                this.drawGrid();
+            } else {
+                this.clearGrid();
+            }
         },
 
-        gridX(value) {
-            this.refresh();
+        gridX() {
+            this.drawGrid();
         },
 
-        gridY(value) {
-            this.refresh();
+        gridY() {
+            this.drawGrid();
         }
     },
 
@@ -207,6 +223,10 @@ export default {
             });
         },
 
+        clearGrid() {
+            this.grid.clearRect(0, 0, this.grid.canvas.width, this.grid.canvas.height);
+        },
+
         async drawGrid() {
             if (this.showGrid) {
                 const x = Number.parseInt(this.gridX);
@@ -232,8 +252,8 @@ export default {
 
                 return new Promise((resolve, reject) => {
                     image.onload = () => {
-                        this.canvas.fillStyle = this.canvas.createPattern(image, 'repeat');
-                        this.canvas.fillRect(0, 0, this.canvas.canvas.width, this.canvas.canvas.height);
+                        this.grid.fillStyle = this.grid.createPattern(image, 'repeat');
+                        this.grid.fillRect(0, 0, this.grid.canvas.width, this.grid.canvas.height);
 
                         resolve();
                     }
@@ -386,10 +406,7 @@ export default {
         },
 
         async refresh() {
-            this.canvas.fillStyle = 'white';
-            this.canvas.fillRect(0, 0, this.width, this.height);
-
-            await this.drawGrid();
+            this.canvas.clearRect(0, 0, this.width, this.height);
 
             this.points.forEach(({x, y}, p) => {
                 this.drawPoint(p, x, y);
@@ -399,11 +416,12 @@ export default {
         }
     },
 
-    mounted() {
+    async mounted() {
         this.buffer = document.createElement('canvas').getContext('2d');
+        this.grid = this.$refs['grid'].getContext('2d');
         this.canvas = this.$refs['canvas'].getContext('2d');
 
-        this.refresh();
+        await this.drawGrid();
     }
 };
 </script>
