@@ -81,6 +81,8 @@
                 />
             </div>
         </div>
+
+        <textarea class="w-64 mx-2">{{ svgPath }}</textarea>
     </div>
 </template>
 
@@ -120,6 +122,28 @@ export default {
             }
 
             return {};
+        },
+
+        svgPath() {
+            let path = '';
+
+            if (this.points.length > 0) {
+                path = 'M ' + this.points[0].x + ' ' + this.points[0].y;
+            }
+
+            this.points.forEach((point, p, points) => {
+                if (p > 0) {
+                    path += '\nC '
+                        + (points[p - 1].x - points[p - 1].anchors[1].x) + ' '
+                        + (points[p - 1].y - points[p - 1].anchors[1].y) + ', '
+                        + (points[p].x - points[p].anchors[0].x) + ' '
+                        + (points[p].y - points[p].anchors[0].y) + ', '
+                        + (points[p].x) + ' '
+                        + points[p].y;
+                }
+            });
+
+            return path;
         }
     },
 
