@@ -1,6 +1,6 @@
 /<template>
-    <div class="flex justify-center m-4">
-        <div class="max-w-md flex-shrink-0">
+    <div class="grid grid-cols-layout m-4">
+        <div class="col-start-1 col-end-2">
             <div class="flex flex-wrap justify-center">
                 <h3 class="w-full flex-shrink-0 text-center">Mouse control</h3>
 
@@ -56,7 +56,7 @@
             </div>
         </div>
 
-        <div class="flex-shrink-0" :style="{ height: height + 'px', width: width + 'px' }"
+        <div class="col-start-2 col-end-3" :style="{ height: height + 'px', width: width + 'px' }"
              @mousedown.left="pointerDown"
              @touchstart="pointerDown"
              @mouseup.left="pointerUp"
@@ -84,7 +84,7 @@
             </div>
         </div>
 
-        <pre class="flex-shrink-0 w-64 mx-2">{{ svgPath }}</pre>
+        <pre class="col-start-3 col-end-4 px-2">{{ svgPath }}</pre>
     </div>
 </template>
 

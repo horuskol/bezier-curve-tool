@@ -9,6 +9,9 @@ module.exports = {
     extend: {
       gridTemplateRows: {
         'layout': 'auto 1fr auto'
+      },
+      gridTemplateColumns: {
+        'layout': '20rem auto 16rem'
       }
     },
     fontFamily: {
