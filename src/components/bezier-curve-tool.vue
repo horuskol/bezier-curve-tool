@@ -1,6 +1,6 @@
 /<template>
     <div class="flex justify-center m-4">
-        <div class="max-w-md flex-shrink">
+        <div class="max-w-md flex-shrink-0">
             <div class="flex flex-wrap justify-center">
                 <h3 class="w-full flex-shrink-0 text-center">Mouse control</h3>
 
@@ -56,33 +56,35 @@
             </div>
         </div>
 
-        <div :style="{ height: height + 'px', width: width + 'px' }">
+        <div class="flex-shrink-0" :style="{ height: height + 'px', width: width + 'px' }"
+             @mousedown.left="pointerDown"
+             @touchstart="pointerDown"
+             @mouseup.left="pointerUp"
+             @mouseupout="pointerCancel"
+             @touchendout="pointerCancel"
+             @touchcancel="pointerCancel"
+             @contextmenu="rightClick"
+             @mousemove.prevent="pointerMove"
+             @touchmove.prevent="pointerMove"
+        >
             <div class="relative">
                 <canvas ref="grid"
                         class="absolute top-0 left-0 border border-gray-900"
+                        style="pointer-events: none"
                         :height="height"
                         :width="width"
                 />
 
                 <canvas ref="canvas"
                         class="absolute top-0 left-0 border border-gray-900"
+                        style="pointer-events: none"
                         :height="height"
                         :width="width"
-                        @mousedown.left="pointerDown"
-                        @touchstart="pointerDown"
-                        @mouseup.left="pointerUp"
-                        @touchend="pointerUp"
-                        @mouseupout="pointerCancel"
-                        @touchendout="pointerCancel"
-                        @touchcancel="pointerCancel"
-                        @contextmenu="rightClick"
-                        @mousemove="pointerMove"
-                        @touchmove="pointerMove"
                 />
             </div>
         </div>
 
-        <textarea class="w-64 mx-2">{{ svgPath }}</textarea>
+        <pre class="flex-shrink-0 w-64 mx-2">{{ svgPath }}</pre>
     </div>
 </template>
 
@@ -335,7 +337,7 @@ export default {
             this.canvas.stroke();
         },
 
-        pointerCancel(event) {
+        pointerCancel() {
             this.dragging = -1;
         },
 
