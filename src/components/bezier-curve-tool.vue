@@ -54,9 +54,6 @@
                     />
                 </span>
             </div>
-
-            <span v-if="currentPoint.x">x: {{ currentPoint.x }}</span>
-            <span v-if="currentPoint.y">x: {{ currentPoint.y }}</span>
         </div>
 
         <canvas ref="canvas"
@@ -92,10 +89,10 @@ export default {
 
             pointSize: 5,
 
-            gridX: 20,
-            gridY: 20,
-            showGrid: false,
-            snapToGrid: false,
+            gridX: 40,
+            gridY: 40,
+            showGrid: true,
+            snapToGrid: true,
 
             height: 400,
             width: 400
@@ -144,15 +141,15 @@ export default {
         snapXY(x, y) {
             if (this.snapToGrid) {
                 if (x % this.gridX < this.gridX / 2) {
-                    x = x - x % this.gridX;
+                    x = x - (x % this.gridX);
                 } else {
-                    x = x + this.gridX - x % this.gridX;
+                    x = x + this.gridX - (x % this.gridX);
                 }
 
                 if (y % this.gridY < this.gridY / 2) {
-                    y = y - y % this.gridY;
+                    y = y - (y % this.gridY);
                 } else {
-                    y = y + this.gridY - y % this.gridY;
+                    y = y + this.gridY - (y % this.gridY);
                 }
             }
 
@@ -249,8 +246,19 @@ export default {
                 this.canvas.strokeStyle = 'black';
                 this.canvas.beginPath();
                 this.canvas.moveTo(this.points[0].x, this.points[0].y);
-                this.points.forEach(({x, y}) => {
-                    this.canvas.lineTo(x, y);
+                this.points.forEach((point, p, points) => {
+                    if (p > 0) {
+                        this.canvas.bezierCurveTo(
+                            points[p - 1].x - points[p - 1].anchors[1].x,
+                            points[p - 1].y - points[p - 1].anchors[1].y,
+
+                            points[p].x - points[p].anchors[0].x,
+                            points[p].y - points[p].anchors[0].y,
+
+                            points[p].x,
+                            points[p].y
+                        )
+                    }
                 });
                 this.canvas.stroke();
             }
@@ -380,6 +388,8 @@ export default {
     mounted() {
         this.buffer = document.createElement('canvas').getContext('2d');
         this.canvas = this.$refs['canvas'].getContext('2d');
+
+        this.refresh();
     }
 };
 </script>
