@@ -175,7 +175,7 @@ export default {
 
         detectAnchor(x, y) {
             return this.points.reduce((found, point, p) => {
-                if (!found) {
+                if (found.p === -1) {
                     if (
                         point.x - point.anchors[0].x - this.pointSize <= x
                         && point.x - point.anchors[0].x + this.pointSize >= x
@@ -183,7 +183,9 @@ export default {
                         && point.y - point.anchors[0].y + this.pointSize >= y
                     ) {
                         return {p, a: 0};
-                    } else if (
+                    }
+
+                    if (
                         point.x - point.anchors[1].x - this.pointSize <= x
                         && point.x - point.anchors[1].x + this.pointSize >= x
                         && point.y - point.anchors[1].y - this.pointSize <= y
@@ -194,7 +196,7 @@ export default {
                 }
 
                 return found;
-            }, false);
+            }, {p: -1, a: -1});
         },
 
         detectPoint(x, y) {
@@ -287,30 +289,29 @@ export default {
             const {x, y} = getPointerXY(event, true);
 
             if (this.mode === 'points') {
-                let p = -1;
-                if ((p = this.detectPoint(x, y)) >= 0) {
+                let p = this.detectPoint(x, y);
+
+                if (p >= 0) {
                     this.dragging = p;
                     this.modifying = p;
                     this.anchor = -1;
-                } else {
-                    this.dragging = this.addPoint(x, y);
-                    this.modifying = this.dragging;
-                    this.drawPoint(this.modifying, x, y);
-                }
-            } else {
-                let p = -1;
-                let a = -1;
 
-                try {
-                    if (({p, a} = this.detectAnchor(x, y))) {
-
-                        this.dragging = p;
-                        this.modifying = p;
-                        this.anchor = a;
-                    }
-                } catch {
-                    // do nothing
+                    return;
                 }
+
+                this.dragging = this.addPoint(x, y);
+                this.modifying = this.dragging;
+                this.drawPoint(this.modifying, x, y);
+
+                return;
+            }
+
+            let {p, a} = this.detectAnchor(x, y);
+
+            if (p >= 0) {
+                this.dragging = p;
+                this.modifying = p;
+                this.anchor = a;
             }
         },
 
@@ -335,15 +336,30 @@ export default {
         rightClick(event) {
             const {x, y} = getPointerXY(event, true);
 
-            let p = -1;
-            if (this.mode === 'points' && (p = this.detectPoint(x, y)) >= -1) {
+            if (this.mode === 'points') {
+                let p = this.detectPoint(x, y);
+                if (p >= 0) {
+                    event.preventDefault();
+                    this.points.splice(p, 1);
+                    this.dragging = -1;
+                    this.modifying = -1;
+                    this.anchor = -1;
+
+                    this.refresh();
+
+                    return;
+                }
+            }
+
+            let {p, a} = this.detectAnchor(x, y);
+            if (p >= 0) {
                 event.preventDefault();
-                this.points.splice(p, 1);
-                this.dragging = -1;
-                this.modifying = -1;
-                this.anchor = -1;
+                this.points[p].anchors[a].x = 0;
+                this.points[p].anchors[a].y = 0;
 
                 this.refresh();
+
+                return;
             }
         },
 
