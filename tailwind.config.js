@@ -11,7 +11,7 @@ module.exports = {
         'layout': 'auto 1fr auto'
       },
       gridTemplateColumns: {
-        'layout': '20rem auto 16rem'
+        'layout': '21rem auto 16rem'
       }
     },
     fontFamily: {

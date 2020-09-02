@@ -1,6 +1,6 @@
 /<template>
     <div class="grid grid-cols-layout m-4">
-        <div class="col-start-1 col-end-2">
+        <div class="col-start-1 col-end-2 px-2">
             <div class="flex flex-wrap justify-center">
                 <h3 class="w-full flex-shrink-0 text-center">Mouse control</h3>
 
@@ -21,7 +21,7 @@
                 </button>
             </div>
 
-            <div class="flex flex-wrap gap-x-10 gap-y-3 mt-8 justify-center">
+            <div class="flex flex-wrap gap-x-10 gap-y-3 mt-8 border-t pt-4 justify-center ">
                 <h3 class="w-full flex-shrink-0 text-center">Grid options</h3>
 
                 <span class="w-1/3 text-center">
@@ -105,7 +105,7 @@ export default {
             mode: 'points',
             points: [],
 
-            pointSize: 5,
+            pointSize: 0,
 
             gridX: 40,
             gridY: 40,
@@ -356,6 +356,11 @@ export default {
         },
 
         pointerDown(event) {
+            // set the pointSize depending on the device: need a larger point on touchscreens
+            if (this.pointSize === 0) {
+                event.touches ? this.pointSize = 20 : this.pointSize = 5;
+            }
+
             const {x, y} = getPointerXY(event, true);
 
             if (this.mode === 'points') {
