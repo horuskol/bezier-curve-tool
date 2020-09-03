@@ -218,7 +218,8 @@ export default {
             return this.points.reduce((found, point, p) => {
                 if (found.p === -1) {
                     if (
-                        point.x - point.anchors[0].x - this.pointSize <= x
+                        p > 0 // the first anchor on the first point is hidden, so shouldn't be detected
+                        && point.x - point.anchors[0].x - this.pointSize <= x
                         && point.x - point.anchors[0].x + this.pointSize >= x
                         && point.y - point.anchors[0].y - this.pointSize <= y
                         && point.y - point.anchors[0].y + this.pointSize >= y
@@ -227,7 +228,8 @@ export default {
                     }
 
                     if (
-                        point.x - point.anchors[1].x - this.pointSize <= x
+                        p < this.points.length - 1 // the second anchor on the second point is hidden
+                        && point.x - point.anchors[1].x - this.pointSize <= x
                         && point.x - point.anchors[1].x + this.pointSize >= x
                         && point.y - point.anchors[1].y - this.pointSize <= y
                         && point.y - point.anchors[1].y + this.pointSize >= y
