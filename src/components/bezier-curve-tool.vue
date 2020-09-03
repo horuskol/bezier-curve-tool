@@ -136,12 +136,12 @@ export default {
             this.points.forEach((point, p, points) => {
                 if (p > 0) {
                     path += '\nC '
-                        + (points[p - 1].x - points[p - 1].anchors[1].x) + ' '
-                        + (points[p - 1].y - points[p - 1].anchors[1].y) + ', '
-                        + (points[p].x - points[p].anchors[0].x) + ' '
-                        + (points[p].y - points[p].anchors[0].y) + ', '
-                        + (points[p].x) + ' '
-                        + points[p].y;
+                        + Math.round(points[p - 1].x - points[p - 1].anchors[1].x) + ' '
+                        + Math.round(points[p - 1].y - points[p - 1].anchors[1].y) + ', '
+                        + Math.round(points[p].x - points[p].anchors[0].x) + ' '
+                        + Math.round(points[p].y - points[p].anchors[0].y) + ', '
+                        + Math.round(points[p].x) + ' '
+                        + Math.round(points[p].y);
                 }
             });
 
@@ -315,21 +315,29 @@ export default {
         drawPoint(p) {
             this.canvas.strokeStyle = '#808080';
 
-            this.canvas.strokeRect(this.points[p].x - this.points[p].anchors[0].x - this.pointSize, this.points[p].y - this.points[p].anchors[0].y - this.pointSize, 2 * this.pointSize, 2 * this.pointSize);
+            if (p > 0) {
+                // draw the control point for the curve back to the previous point
+                this.canvas.strokeRect(this.points[p].x - this.points[p].anchors[0].x - this.pointSize, this.points[p].y - this.points[p].anchors[0].y - this.pointSize, 2 * this.pointSize, 2 * this.pointSize);
 
-            this.canvas.beginPath();
-            this.canvas.moveTo(this.points[p].x, this.points[p].y);
-            this.canvas.lineTo(this.points[p].x - this.points[p].anchors[0].x, this.points[p].y - this.points[p].anchors[0].y);
-            this.canvas.stroke();
+                this.canvas.beginPath();
+                this.canvas.moveTo(this.points[p].x, this.points[p].y);
+                this.canvas.lineTo(this.points[p].x - this.points[p].anchors[0].x, this.points[p].y - this.points[p].anchors[0].y);
+                this.canvas.stroke();
+            }
 
-            this.canvas.strokeRect(this.points[p].x - this.points[p].anchors[1].x - this.pointSize, this.points[p].y - this.points[p].anchors[1].y - this.pointSize, 2 * this.pointSize, 2 * this.pointSize);
+            if (p < (this.points.length - 1)) {
+                // draw the control point for the curve to the next point
+                this.canvas.strokeRect(this.points[p].x - this.points[p].anchors[1].x - this.pointSize, this.points[p].y - this.points[p].anchors[1].y - this.pointSize, 2 * this.pointSize, 2 * this.pointSize);
 
-            this.canvas.beginPath();
-            this.canvas.moveTo(this.points[p].x, this.points[p].y);
-            this.canvas.lineTo(this.points[p].x - this.points[p].anchors[1].x, this.points[p].y - this.points[p].anchors[1].y);
-            this.canvas.stroke();
+                this.canvas.beginPath();
+                this.canvas.moveTo(this.points[p].x, this.points[p].y);
+                this.canvas.lineTo(this.points[p].x - this.points[p].anchors[1].x, this.points[p].y - this.points[p].anchors[1].y);
+                this.canvas.stroke();
+            }
 
+            // draw the actual point
             if (this.modifying === p) {
+                // highlight the 'current' point
                 this.canvas.strokeStyle = 'red';
             }
             this.canvas.beginPath();
