@@ -40,7 +40,8 @@ module.exports = {
     plugins: [
         new CopyWebpackPlugin({
             patterns: [
-                { from: 'src/index.html' }
+                { from: 'src/index.html' },
+                { from: 'src/img', to: 'img'}
             ]
         }),
         new MiniCssExtractPlugin({

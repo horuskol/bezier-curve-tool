@@ -16,6 +16,71 @@
             <bezier-curve-tool></bezier-curve-tool>
         </main>
 
+        <div class="m-4 p-4 border border-blue-500">
+            <h2 class="mb-2 text-xl text-bold">
+                About the tool
+            </h2>
+
+            <p class="mb-2">
+                I was playing around with some SVG paths and getting frustrated with defining some curves - I couldn't make the link between setting the control points and how the curve&hellip; curved.
+            </p>
+
+            <p class="mb-2">
+                I tried searching for some tutorials or other descriptions of how cubic Bézier curves worked, but all I got was a lot of dense mathematics articles. Eventually I was able to get what I wanted through trial and error, but decided I needed a visual tool to help in the future.
+            </p>
+
+            <p class="mb-2">
+                So here it is. A zero-maths tool for generating curvy paths. Set your points and anchors, and a path specification will output on the right.
+            </p>
+
+            <p class="mb-2">
+                It works on touch screens, too.
+            </p>
+        </div>
+
+        <div class="m-4 p-4 border border-blue-500">
+            <h2 class="mb-2 text-xl text-bold">
+                Cubic Bézier curves
+            </h2>
+
+            <img class="float-right" src="/img/curve.png" alt="an example Bézier curve between two points" height="200" width="200"/>
+
+            <p class="inline-block mb-2 border p-2 border-blue-500 bg-blue-100">
+                <b>B</b>(<i>t</i> ) = (1 - <i>t</i> )<sup>3</sup><b>B<sub>P<sub>0</sub>,P<sub>1</sub>,P<sub>2</sub></sub></b>(<i>t</i> )+<i>t</i> <b>B<sub>P<sub>1</sub>,P<sub>2</sub>,P<sub>3</sub></sub></b>(<i>t</i> ) , 0 &le; <i>t</i> &le; 1
+            </p>
+
+            <p class="mb-2">
+                Got that? Yeah, me neither. (If you do, then kudos - but I haven't dealt with Maths like this since graduating from university in 2000).
+            </p>
+
+            <p class="mb-2">
+                The basic idea behind a cubic Bézier curve is that you have a start and end point, and then you have two control points (or anchors). With these four points you can define a curve.
+            </p>
+
+            <p class="mb-2">
+                Both SVG and the Canvas API have functions to handle the maths for you, so all you have to know is where you want the four points to be. But how do you know where the points should be for the curve you want?
+            </p>
+
+            <p class="mb-2">
+                If you want to know more about Bézier curves, there's
+                <a class="text-blue-700 visited:text-purple-700 hover:text-indigo-500 underline" href="https://en.wikipedia.org/wiki/B%C3%A9zier_curve">Wikipedia</a>
+                or this in-depth
+                <a class="text-blue-700 visited:text-purple-700 hover:text-indigo-500 underline" href="https://pomax.github.io/bezierinfo/">primer</a>.
+            </p>
+        </div>
+
+        <div class="m-4 p-4 border border-blue-500">
+            <h2 class="mb-2 text-xl text-bold">
+                Built with
+            </h2>
+
+            <ul class="mb-2">
+                <li><a class="text-blue-700 visited:text-purple-700 hover:text-indigo-500 underline" href="https://vuejs.org/">Vue.js</a></li>
+                <li><a class="text-blue-700 visited:text-purple-700 hover:text-indigo-500 underline" href="https://tailwindcss.com/">Tailwind CSS</a></li>
+                <li><a class="text-blue-700 visited:text-purple-700 hover:text-indigo-500 underline" href="https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API">Canvas API</a></li>
+            </ul>
+        </div>
+
         <footer class="p-4 text-right bg-gray-200">
             <p>
                 <a class="text-blue-700 visited:text-purple-700 hover:text-indigo-500 underline" href="https://github.com/horuskol/bezier-curve-tool/blob/main/LICENCE">MIT Licence</a> |
