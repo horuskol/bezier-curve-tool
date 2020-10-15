@@ -1,4 +1,4 @@
-/<template>
+<template>
     <div class="grid grid-cols-layout m-4">
         <div class="col-start-1 col-end-2 px-2">
             <div class="flex flex-wrap justify-center">
